@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # Copyright 2016 Jack Chi
 # LinkedList Class and common LinkedList questions
-#
 from sets import Set
 class LinkedList:
 
