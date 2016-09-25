@@ -74,6 +74,25 @@ class BinaryTree(object):
         else:
             return max(self._height(node.left), self._height(node.right)) + 1
 
+    def BFSearch(self, target):
+        """ Using a Queue to iteratively search adjacent nodes
+        before traversing down the tree
+        """
+
+        queue = Queue.Queue()
+        queue.put(self)
+        
+        while not queue.empty():
+            r = queue.get()
+            if (r.val == target):
+                return r
+            if r.root.left != None:
+                queue.put(r.root.left)
+            if r.root.right != None:
+                queue.put(r.root.right) 
+        return None
+
+    
 
 
 tree = BinaryTree()
