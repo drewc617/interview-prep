@@ -1,78 +1,77 @@
-class Node(object):
-    def __init__(self, val):
+#!/usr/bin/python
+# https://github.com/jackchi/interview-prep
+# Copyright 2014 Jack Chi
+
+# Binary Tree Nodes Representation
+# Using Nodes and References to model a Binary Tree
+
+import Queue
+
+
+def isLeaf(node):
+    return not node.getLeftChild() and not node.getRightChild()
+
+def insert(val, leftLine, rightLine, line):
+    print "%d %s %d %d" % (line, val, leftLine, rightLine)
+    return line
+
+class BinaryTree:
+
+    def __init__(self, rootVal=None):
+        self.val = rootVal
+        self.leftChild = None
+        self.rightChild = None
+
+    def insertLeft(self, newVal):
+        if not self.leftChild:
+            self.leftChild = BinaryTree(newVal)
+        else:
+            t = BinaryTree(newVal)
+            t.leftChild = self.leftChild
+            self.leftChild = t
+
+    def insertRight(self, newVal):
+        if not self.rightChild:
+            self.rightChild = BinaryTree(newVal)
+        else:
+            t = BinaryTree(newVal)
+            t.rightChild = self.rightChild
+            self.rightChild = t
+
+    def insert (self, newVal):
+        prev = None
+        curr = self
+        while curr:
+            prev = curr
+            if newVal < curr.val:
+                curr = curr.leftChild
+            else:
+                curr = curr.rightChild  
+        if newVal < prev.val:
+            prev.leftChild = BinaryTree(newVal)
+        else:
+            prev.rightChild = BinaryTree(newVal)
+
+
+    def getLeftChild(self):
+        return self.leftChild       
+
+    def getRightChild(self):
+        return self.rightChild      
+
+    def setRootVal(self, val):
         self.val = val
-        self.left = None
-        self.right = None
 
-    def height(self):
-        return 1
+    def getRootVal(self):
+        return self.val
 
-    def __str__(self):
-        return str(self.val)
-
-class BinaryTree(object):
-    def __init__(self):
-        self.root = None
-
-    def getRoot(self):
-        return self.root
-
-    def add(self, val):
-        if (self.root is None):
-            self.root = Node(val)
-        else:
-            self._add(val, self.root)
-
-    def _add(self, val, node):
-        if (val < node.val):
-            if (node.left is None):
-                node.left = Node(val)
-            else:
-                self._add(val, node.left) # recursive left node call
-        else:
-            if (node.right is None):
-                node.right = Node(val)
-            else:
-                self._add(val, node.right) # recursive right node call
-
-    def find(self, val):
-        if self.root is None:
-            return None
-        else:
-            return self._find(val, self.root)
-
-    def _find(self, val, node):
-        if node.val == val:
-            return node
-        elif val < node.val and node.left is not None:
-            return self._find(val, node.left)
-        elif val > node.val and node.right is not None:
-            return self._find(val, node.right)
-
-    def delete(self):
-        self.root = None
-
-    def printTree(self):
-        if self.root is not None:
-            self._printTree(self.root)
-
-    def _printTree(self, node):
-        if node is not None:
-            self._printTree(node.left)
-            print str(node.val) + ' '
-            self._printTree(node.right)
-
-    def height(self):
-        if self.root is None:
+    @staticmethod   
+    def getHeight(node):
+        if node == None:
             return 0
-        else:
-            return max(self._height(self.root.left), self._height(self.root.right)) + 1
-
-    def _height(self, node):
-        if node is None:
-            return 0
-        else:
-            return max(self._height(node.left), self._height(node.right)) + 1
+        else: 
+            return max(BinaryTree.getHeight(node.getLeftChild()), 
+                    BinaryTree.getHeight(node.getRightChild())) + 1 
 
     def BFSearch(self, target):
         """ Using a Queue to iteratively search adjacent nodes
@@ -86,22 +85,31 @@ class BinaryTree(object):
             r = queue.get()
             if (r.val == target):
                 return r
-            if r.root.left != None:
-                queue.put(r.root.left)
-            if r.root.right != None:
-                queue.put(r.root.right) 
+            if r.leftChild != None:
+                queue.put(r.leftChild)
+            if r.rightChild != None:
+                queue.put(r.rightChild) 
         return None
 
-    
+    def DFSearch(self, target):
+        """ Using recursion to search leftmost depth nodes
+        before traversing across adjacent nodes
+        """
+        if self.val == target:
+            return self
+        else:
+            if not self.getLeftChild():
+                self.getLeftChild().DFSearch(target)
+            if not self.getRightChild():
+                self.getRightChild().DFSearch(target)
+
+    def DFPrint(self, line=0):
+        if isLeaf(self):
+            line+=1
+            return insert(self.val, -1, -1, line)       
+        else: 
+            line+=1
+            return insert(self.val, self.getLeftChild().DFPrint(line) if self.getLeftChild() else -1, 
+                self.getRightChild().DFPrint(line) if self.getRightChild() else -1, line) 
 
 
-tree = BinaryTree()
-tree.add(3)
-tree.add(5)
-tree.add(1)
-tree.add(6)
-tree.add(7)
-tree.add(11)
-tree.add(2)
-
-print tree.height()
